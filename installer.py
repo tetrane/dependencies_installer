@@ -199,11 +199,11 @@ dependencies.
             execute_subprocess([str(hook)])
 
     if package_list:
-        print(COLORS.cyan("installing packages: ") + package_list)
+        print(COLORS.cyan("installing packages: ") + str(package_list))
         execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list)
 
     if package_backport_list:
-        print(COLORS.cyan("installing packages from backports: ") + package_backport_list)
+        print(COLORS.cyan("installing packages from backports: ") + str(package_backport_list))
         execute_subprocess(["apt", "install", "-t", codename + "-backports", "-y"] + package_backport_list)
 
     if posthook_list:
