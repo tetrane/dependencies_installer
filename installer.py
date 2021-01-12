@@ -191,19 +191,23 @@ dependencies.
     package_backport_list = get_package_list(args.folder, codename, backports=True)
     posthook_list = get_posthook_list(args.folder, codename)
 
-    print(COLORS.cyan("running pre-packages hooks"))
-    for hook in prehook_list:
-        execute_subprocess([str(hook)])
+    if prehook_list:
+        print(COLORS.cyan("running pre-packages hooks"))
+        for hook in prehook_list:
+            execute_subprocess([str(hook)])
 
-    print(COLORS.cyan("installing packages"))
-    execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list)
+    if package_list:
+        print(COLORS.cyan("installing packages: ") + package_list)
+        execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list)
 
-    print(COLORS.cyan("installing packages from backports"))
-    execute_subprocess(["apt", "install", "-t", codename + "-backports", "-y"] + package_backport_list)
+    if package_backport_list:
+        print(COLORS.cyan("installing packages from backports: ") + package_backport_list)
+        execute_subprocess(["apt", "install", "-t", codename + "-backports", "-y"] + package_backport_list)
 
-    print(COLORS.cyan("running post-packages hooks"))
-    for hook in posthook_list:
-        execute_subprocess([str(hook)])
+    if posthook_list:
+        print(COLORS.cyan("running post-packages hooks"))
+        for hook in posthook_list:
+            execute_subprocess([str(hook)])
 
 
 if __name__ == "__main__":
