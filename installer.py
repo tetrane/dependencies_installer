@@ -131,6 +131,8 @@ def execute_subprocess(cmd):
             print(COLORS.bold("  stderr:"))
             print("%s" % e.stderr.decode("utf-8", errors="replace"))
 
+        sys.exit(1)
+
 
 def main():
     parser = argparse.ArgumentParser(
