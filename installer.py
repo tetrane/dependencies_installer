@@ -64,11 +64,14 @@ def get_codename():
             )
 
 
-def get_package_list(path_list, codename):
+def get_package_list(path_list, codename, backports=False):
+    if backports:
+        codename += "-backports"
     # Get the list of package lists
     lists_list = []
     for p in path_list:
-        lists_list += list(p.glob("**/common.pkglist"))
+        if not backports:
+            lists_list += list(p.glob("**/common.pkglist"))
         lists_list += list(p.glob("**/" + codename + ".pkglist"))
 
     # Get the package list from the lists
@@ -139,6 +142,7 @@ with the following patterns:
   * common.prepkg.*
   * common.postpkg.*
   * <codename>.pkglist
+  * <codename>-backports.pkglist
   * <codename>.prepkg.*
   * <codename>.postpkg.*
 
@@ -160,6 +164,7 @@ deps
 |   |-- buster.pkglist
 |   |-- buster.postpkg.py
 |   |-- buster.prepkg.sh
+|   |-- buster-backports.pkglist
 |   |-- common.pkglist
 |-- runtime
     |-- buster.pkglist
@@ -183,6 +188,7 @@ dependencies.
 
     prehook_list = get_prehook_list(args.folder, codename)
     package_list = get_package_list(args.folder, codename)
+    package_backport_list = get_package_list(args.folder, codename, backports=True)
     posthook_list = get_posthook_list(args.folder, codename)
 
     print(COLORS.cyan("running pre-packages hooks"))
@@ -190,7 +196,10 @@ dependencies.
         execute_subprocess([str(hook)])
 
     print(COLORS.cyan("installing packages"))
-    execute_subprocess(["apt", "install", "-y"] + package_list)
+    execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list)
+
+    print(COLORS.cyan("installing packages from backports"))
+    execute_subprocess(["apt", "install", "-t", codename + "-backports", "-y"] + package_backport_list)
 
     print(COLORS.cyan("running post-packages hooks"))
     for hook in posthook_list:
