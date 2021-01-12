@@ -75,7 +75,7 @@ def get_package_list(path_list, codename):
     package_list = []
     for l in lists_list:
         content = l.read_text()
-        package_list += [package for package in content.split("\n") if package]
+        package_list += [package for package in content.split("\n") if package and not package.startswith("#")]
 
     return package_list
 
@@ -146,7 +146,8 @@ with the following patterns:
 'focal', etc...
 
 The *.pkglist files should contain one package name per line, and they will be
-concatenated before calling the package manager.
+concatenated before calling the package manager. Comments are supported in the
+form of lines starting with '#'.
 The *.prepkg.* and *.postpkg.* files should be executable, and will be executed
 before and after the call to the package manager, respectively.
 
