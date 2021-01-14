@@ -198,6 +198,10 @@ dependencies.
         for hook in prehook_list:
             execute_subprocess([str(hook)])
 
+    if package_list or package_backport_list:
+        print(COLORS.cyan("updating apt database"))
+        execute_subprocess(["apt", "update"])
+
     if package_list:
         print(COLORS.cyan("installing packages: ") + str(package_list))
         execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list)
