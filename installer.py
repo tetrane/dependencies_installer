@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -103,11 +104,11 @@ def get_posthook_list(path_list, codename):
     return hook_list
 
 
-def execute_subprocess(cmd):
+def execute_subprocess(cmd, env=None):
     try:
         # TODO see how we could display progress, or give a way get progress
         # through a given file, or anything...
-        subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, env=env)
     except PermissionError as e:
         print(
             COLORS.red(
@@ -204,11 +205,15 @@ dependencies.
 
     if package_list:
         print(COLORS.cyan("installing packages: ") + str(package_list))
-        execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list)
+        env = os.environ.copy()
+        env["DEBIAN_FRONTEND"] = "noninteractive"
+        execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list, env)
 
     if package_backport_list:
         print(COLORS.cyan("installing packages from backports: ") + str(package_backport_list))
-        execute_subprocess(["apt", "install", "-t", codename + "-backports", "-y"] + package_backport_list)
+        env = os.environ.copy()
+        env["DEBIAN_FRONTEND"] = "noninteractive"
+        execute_subprocess(["apt", "install", "-t", codename + "-backports", "-y"] + package_backport_list, env)
 
     if posthook_list:
         print(COLORS.cyan("running post-packages hooks"))
