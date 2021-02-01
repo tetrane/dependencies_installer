@@ -47,7 +47,10 @@ def get_os_id():
 
 
 def get_os_version_id():
-    return parse_os_release()["VERSION_ID"]
+    try:
+        return parse_os_release()["VERSION_ID"]
+    except KeyError:  # testing doesn't provides its version ID
+        return "11"
 
 
 def get_codename():
