@@ -190,7 +190,7 @@ dependencies.
     args = parser.parse_args()
 
     codename = get_codename()
-    print(COLORS.cyan("distro codename: ") + codename)
+    print(COLORS.cyan("distro codename: ") + codename, flush=True)
 
     prehook_list = get_prehook_list(args.folder, codename)
     package_list = get_package_list(args.folder, codename)
@@ -198,28 +198,28 @@ dependencies.
     posthook_list = get_posthook_list(args.folder, codename)
 
     if prehook_list:
-        print(COLORS.cyan("running pre-packages hooks"))
+        print(COLORS.cyan("running pre-packages hooks"), flush=True)
         for hook in prehook_list:
             execute_subprocess([str(hook)])
 
     if package_list or package_backport_list:
-        print(COLORS.cyan("updating apt database"))
+        print(COLORS.cyan("updating apt database"), flush=True)
         execute_subprocess(["apt", "update"])
 
     if package_list:
-        print(COLORS.cyan("installing packages: ") + str(package_list))
+        print(COLORS.cyan("installing packages: ") + str(package_list), flush=True)
         env = os.environ.copy()
         env["DEBIAN_FRONTEND"] = "noninteractive"
         execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list, env)
 
     if package_backport_list:
-        print(COLORS.cyan("installing packages from backports: ") + str(package_backport_list))
+        print(COLORS.cyan("installing packages from backports: ") + str(package_backport_list), flush=True)
         env = os.environ.copy()
         env["DEBIAN_FRONTEND"] = "noninteractive"
         execute_subprocess(["apt", "install", "-t", codename + "-backports", "-y"] + package_backport_list, env)
 
     if posthook_list:
-        print(COLORS.cyan("running post-packages hooks"))
+        print(COLORS.cyan("running post-packages hooks"), flush=True)
         for hook in posthook_list:
             execute_subprocess([str(hook)])
 
