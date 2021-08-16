@@ -62,10 +62,21 @@ def get_codename():
             return "buster"
         elif os_version_id == "11":
             return "bullseye"
+        elif os_version_id == "12":
+            return "bookworm"
         else:
             raise RuntimeError(
-                COLORS.bold(COLORS.red("Unable to find distro codename"))
+                COLORS.bold(COLORS.red("Unable to find Debian distro codename"))
             )
+    elif get_os_id() == "ubuntu":
+        if os_version_id == "20.04":
+            return "focal"
+        else:
+            raise RuntimeError(
+                COLORS.bold(COLORS.red("Unable to find Ubuntu distro codename"))
+            )
+    else:
+        raise RuntimeError(COLORS.bold(COLORS.red("Unable to find Linux distribution")))
 
 
 def get_package_list(path_list, codename, backports=False):
@@ -82,7 +93,11 @@ def get_package_list(path_list, codename, backports=False):
     package_list = []
     for l in lists_list:
         content = l.read_text()
-        package_list += [package for package in content.split("\n") if package and not package.startswith("#")]
+        package_list += [
+            package
+            for package in content.split("\n")
+            if package and not package.startswith("#")
+        ]
 
     return package_list
 
@@ -111,7 +126,9 @@ def execute_subprocess(cmd, env=None):
     try:
         # TODO see how we could display progress, or give a way get progress
         # through a given file, or anything...
-        subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, env=env)
+        subprocess.run(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, env=env
+        )
     except PermissionError as e:
         print(
             COLORS.red(
@@ -213,10 +230,18 @@ dependencies.
         execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list, env)
 
     if package_backport_list:
-        print(COLORS.cyan("installing packages from backports: ") + str(package_backport_list), flush=True)
+        print(
+            COLORS.cyan("installing packages from backports: ")
+            + str(package_backport_list),
+            flush=True,
+        )
         env = os.environ.copy()
         env["DEBIAN_FRONTEND"] = "noninteractive"
-        execute_subprocess(["apt", "install", "-t", codename + "-backports", "-y"] + package_backport_list, env)
+        execute_subprocess(
+            ["apt", "install", "-t", codename + "-backports", "-y"]
+            + package_backport_list,
+            env,
+        )
 
     if posthook_list:
         print(COLORS.cyan("running post-packages hooks"), flush=True)
