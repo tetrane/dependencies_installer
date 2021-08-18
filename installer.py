@@ -50,12 +50,14 @@ def get_os_version_id():
     try:
         return parse_os_release()["VERSION_ID"]
     except KeyError:  # testing doesn't provides its version ID
-        return "11"
+        return None
 
 
 def get_codename():
     if get_os_id() == "debian":
         os_version_id = get_os_version_id()
+        if os_version_id is None:
+            os_version_id = "12"  # force testing
         if os_version_id == "9":
             return "stretch"
         elif os_version_id == "10":
