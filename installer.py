@@ -229,7 +229,7 @@ dependencies.
         print(COLORS.cyan("installing packages: ") + str(package_list), flush=True)
         env = os.environ.copy()
         env["DEBIAN_FRONTEND"] = "noninteractive"
-        execute_subprocess(["apt", "install", "-t", codename, "-y"] + package_list, env)
+        execute_subprocess(["apt", "install", "-y"] + package_list, env)
 
     if package_backport_list:
         print(
